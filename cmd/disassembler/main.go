@@ -65,11 +65,11 @@ var opcodes = map[byte]Opcode{
 
 	0x11: Opcode{"LXI ", 3, RegD, Immediate, Immediate},
 	0x12: Opcode{Mnemonic: "STAX", Size: 1, FirstOp: RegD},
-	0x13: Opcode{Mnemonic: "INX", Size: 1, FirstOp: RegD},
-	0x14: Opcode{Mnemonic: "INR", Size: 1, FirstOp: RegD},
-	0x15: Opcode{Mnemonic: "DCR", Size: 1, FirstOp: RegD},
+	0x13: Opcode{Mnemonic: "INX ", Size: 1, FirstOp: RegD},
+	0x14: Opcode{Mnemonic: "INR ", Size: 1, FirstOp: RegD},
+	0x15: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegD},
 	0x16: Opcode{"MVI ", 2, RegD, Immediate, Nil},
-	0x17: Opcode{Mnemonic: "RAL", Size: 1},
+	0x17: Opcode{Mnemonic: "RAL ", Size: 1},
 
 	0x19: Opcode{Mnemonic: "DAD ", Size: 1, FirstOp: RegD},
 	0x1a: Opcode{Mnemonic: "LDAX", Size: 1, FirstOp: RegD},
@@ -81,11 +81,11 @@ var opcodes = map[byte]Opcode{
 
 	0x21: Opcode{"LXI ", 3, RegH, Immediate, Immediate},
 	0x22: Opcode{"SHLD", 3, Addr, Addr, Nil},
-	0x23: Opcode{Mnemonic: "INX", Size: 1, FirstOp: RegH},
-	0x24: Opcode{Mnemonic: "INR", Size: 1, FirstOp: RegH},
-	0x25: Opcode{Mnemonic: "DCR", Size: 1, FirstOp: RegH},
+	0x23: Opcode{Mnemonic: "INX ", Size: 1, FirstOp: RegH},
+	0x24: Opcode{Mnemonic: "INR ", Size: 1, FirstOp: RegH},
+	0x25: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegH},
 	0x26: Opcode{"MVI ", 2, RegH, Immediate, Nil},
-	0x27: Opcode{Mnemonic: "DAA", Size: 1},
+	0x27: Opcode{Mnemonic: "DAA ", Size: 1},
 
 	0x29: Opcode{Mnemonic: "DAD ", Size: 1, FirstOp: RegH},
 	0x2a: Opcode{"LHLD", 3, Addr, Addr, Nil},
@@ -97,14 +97,14 @@ var opcodes = map[byte]Opcode{
 
 	0x31: Opcode{"LXI ", 3, RegSp, Immediate, Immediate},
 	0x32: Opcode{"STA ", 3, Addr, Addr, Nil},
-	0x33: Opcode{Mnemonic: "INX", Size: 1, FirstOp: RegSp},
-	0x34: Opcode{Mnemonic: "INR", Size: 1, FirstOp: RegM},
-	0x35: Opcode{Mnemonic: "DCR", Size: 1, FirstOp: RegM},
+	0x33: Opcode{Mnemonic: "INX ", Size: 1, FirstOp: RegSp},
+	0x34: Opcode{Mnemonic: "INR ", Size: 1, FirstOp: RegM},
+	0x35: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegM},
 	0x36: Opcode{"MVI ", 2, RegM, Immediate, Nil},
-	0x37: Opcode{Mnemonic: "STC", Size: 1},
+	0x37: Opcode{Mnemonic: "STC ", Size: 1},
 
 	0x39: Opcode{Mnemonic: "DAD ", Size: 1, FirstOp: RegSp},
-	0x3a: Opcode{"LDA", 3, Addr, Addr, Nil},
+	0x3a: Opcode{"LDA ", 3, Addr, Addr, Nil},
 	0x3b: Opcode{Mnemonic: "DCX ", Size: 1, FirstOp: RegSp},
 	0x3c: Opcode{Mnemonic: "INR ", Size: 1, FirstOp: RegA},
 	0x3d: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegA},
@@ -381,9 +381,9 @@ func disassembleSize2(opcode Opcode, instr, operand byte) string {
 			log.Fatalf("disassembleSize2: the operand must be an immediate value")
 		}
 
-		return fmt.Sprintf("%s   %s, #0x%02x", header, registers[opcode.FirstOp], operand)
+		return fmt.Sprintf("%s   %s, #$%02x", header, registers[opcode.FirstOp], operand)
 	} else if opcode.FirstOp == Immediate {
-		return fmt.Sprintf("%s   #0x%02x", header, operand)
+		return fmt.Sprintf("%s   #$%02x", header, operand)
 	}
 
 	panic(fmt.Sprintf("disassembleSize2: unknown operation: %v", opcode))
@@ -392,7 +392,7 @@ func disassembleSize2(opcode Opcode, instr, operand byte) string {
 func disassembleSize3(opcode Opcode, instr, low, high byte) string {
 	var header = fmt.Sprintf("%02x %02x %02x %s", instr, low, high, opcode.Mnemonic)
 	if opcode.FirstOp.IsRegister() && opcode.OperandLow == Immediate && opcode.OperandHigh == Immediate {
-		return fmt.Sprintf("%s   %s, #0x%02x%02x", header, registers[opcode.FirstOp], low, high)
+		return fmt.Sprintf("%s   %s, #$%02x%02x", header, registers[opcode.FirstOp], high, low)
 	} else if opcode.FirstOp == Addr && opcode.OperandLow == Addr {
 		return fmt.Sprintf("%s   $%02x%02x", header, high, low)
 	}
