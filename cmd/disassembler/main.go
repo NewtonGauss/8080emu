@@ -54,7 +54,7 @@ var opcodes = map[byte]Opcode{
 	0x05: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegB},
 	0x06: Opcode{"MVI ", 2, RegB, Immediate, Nil},
 	0x07: Opcode{Mnemonic: "RLC ", Size: 1},
-
+	0x08: Opcode{Mnemonic: "NOP ", Size: 1},
 	0x09: Opcode{Mnemonic: "DAD ", Size: 1, FirstOp: RegB},
 	0x0a: Opcode{Mnemonic: "LDAX", Size: 1, FirstOp: RegB},
 	0x0b: Opcode{Mnemonic: "DCX ", Size: 1, FirstOp: RegB},
@@ -62,7 +62,7 @@ var opcodes = map[byte]Opcode{
 	0x0d: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegC},
 	0x0e: Opcode{"MVI ", 2, RegC, Immediate, Nil},
 	0x0f: Opcode{Mnemonic: "RRC ", Size: 1},
-
+	0x10: Opcode{Mnemonic: "NOP ", Size: 1},
 	0x11: Opcode{"LXI ", 3, RegD, Immediate, Immediate},
 	0x12: Opcode{Mnemonic: "STAX", Size: 1, FirstOp: RegD},
 	0x13: Opcode{Mnemonic: "INX ", Size: 1, FirstOp: RegD},
@@ -70,7 +70,7 @@ var opcodes = map[byte]Opcode{
 	0x15: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegD},
 	0x16: Opcode{"MVI ", 2, RegD, Immediate, Nil},
 	0x17: Opcode{Mnemonic: "RAL ", Size: 1},
-
+	0x18: Opcode{Mnemonic: "NOP ", Size: 1},
 	0x19: Opcode{Mnemonic: "DAD ", Size: 1, FirstOp: RegD},
 	0x1a: Opcode{Mnemonic: "LDAX", Size: 1, FirstOp: RegD},
 	0x1b: Opcode{Mnemonic: "DCX ", Size: 1, FirstOp: RegD},
@@ -78,7 +78,7 @@ var opcodes = map[byte]Opcode{
 	0x1d: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegD},
 	0x1e: Opcode{"MVI ", 2, RegE, Immediate, Nil},
 	0x1f: Opcode{Mnemonic: "RAR ", Size: 1},
-
+	0x20: Opcode{Mnemonic: "NOP ", Size: 1},
 	0x21: Opcode{"LXI ", 3, RegH, Immediate, Immediate},
 	0x22: Opcode{"SHLD", 3, Addr, Addr, Nil},
 	0x23: Opcode{Mnemonic: "INX ", Size: 1, FirstOp: RegH},
@@ -86,7 +86,7 @@ var opcodes = map[byte]Opcode{
 	0x25: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegH},
 	0x26: Opcode{"MVI ", 2, RegH, Immediate, Nil},
 	0x27: Opcode{Mnemonic: "DAA ", Size: 1},
-
+	0x28: Opcode{Mnemonic: "NOP ", Size: 1},
 	0x29: Opcode{Mnemonic: "DAD ", Size: 1, FirstOp: RegH},
 	0x2a: Opcode{"LHLD", 3, Addr, Addr, Nil},
 	0x2b: Opcode{Mnemonic: "DCX ", Size: 1, FirstOp: RegH},
@@ -94,7 +94,7 @@ var opcodes = map[byte]Opcode{
 	0x2d: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegL},
 	0x2e: Opcode{"MVI ", 2, RegL, Immediate, Nil},
 	0x2f: Opcode{Mnemonic: "CMA ", Size: 1},
-
+	0x30: Opcode{Mnemonic: "NOP ", Size: 1},
 	0x31: Opcode{"LXI ", 3, RegSp, Immediate, Immediate},
 	0x32: Opcode{"STA ", 3, Addr, Addr, Nil},
 	0x33: Opcode{Mnemonic: "INX ", Size: 1, FirstOp: RegSp},
@@ -102,7 +102,7 @@ var opcodes = map[byte]Opcode{
 	0x35: Opcode{Mnemonic: "DCR ", Size: 1, FirstOp: RegM},
 	0x36: Opcode{"MVI ", 2, RegM, Immediate, Nil},
 	0x37: Opcode{Mnemonic: "STC ", Size: 1},
-
+	0x38: Opcode{Mnemonic: "NOP ", Size: 1},
 	0x39: Opcode{Mnemonic: "DAD ", Size: 1, FirstOp: RegSp},
 	0x3a: Opcode{"LDA ", 3, Addr, Addr, Nil},
 	0x3b: Opcode{Mnemonic: "DCX ", Size: 1, FirstOp: RegSp},
