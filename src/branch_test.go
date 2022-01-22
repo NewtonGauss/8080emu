@@ -77,7 +77,16 @@ func TestJump(t *testing.T) {
 }
 
 func TestCall(t *testing.T) {
-	var table = []Pair{}
+	var table = []Pair{
+		Pair{ // CALL addr
+			State{pc: 0, sp: 0xffff, mem: [65536]byte{0xcd, 0xff, 0xf0}},
+			State{pc: 0xfff0, sp: 0xfffd, mem: [65536]byte{0xcd, 0xff, 0xf0, 0xfffd: 3, 0xfffe: 0}},
+		},
+		Pair{ // RET
+			State{pc: 0, sp: 0xfffd, mem: [65536]byte{0xc9, 0xfffd: 3, 0xfffe: 0}},
+			State{pc: 3, sp: 0xffff, mem: [65536]byte{0xc9, 0xfffd: 3, 0xfffe: 0}},
+		},
+	}
 	doTest(t, table)
 }
 

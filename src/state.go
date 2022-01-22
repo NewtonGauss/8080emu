@@ -243,70 +243,70 @@ var instrSz = map[byte]byte{
 	0xbd: 1,
 	0xbe: 1,
 	0xbf: 1,
-	0xc0: 1,
+	0xc0: 0,
 	0xc1: 1,
 	0xc2: 0, // JNZ ... I'll advance the pc manually in case Zero is set
 	0xc3: 0, // JMP do not advance pc
-	0xc4: 3,
+	0xc4: 0,
 	0xc5: 1,
 	0xc6: 2,
-	0xc7: 1,
-	0xc8: 1,
-	0xc9: 1,
+	0xc7: 0,
+	0xc8: 0,
+	0xc9: 0, // RET do not advance pc
 	0xca: 0, // JZ ... I'll advance the pc manually in case Zero is not set
 
-	0xcc: 3,
-	0xcd: 3,
+	0xcc: 0, // CZ ... I'll advance the pc manually
+	0xcd: 0, // CALL do not advance pc
 	0xce: 2,
-	0xcf: 1,
-	0xd0: 1,
+	0xcf: 0,
+	0xd0: 0,
 	0xd1: 1,
 	0xd2: 0, // JNC ... I'll advance the pc manually in case Cy is set
 	0xd3: 2,
-	0xd4: 3,
+	0xd4: 0,
 	0xd5: 1,
 	0xd6: 2,
-	0xd7: 1,
-	0xd8: 1,
+	0xd7: 0,
+	0xd8: 0,
 
 	0xda: 0, // JC ... I'll advance the pc manually in case Cy is not set
 	0xdb: 2,
-	0xdc: 3,
+	0xdc: 0,
 
 	0xde: 2,
-	0xdf: 1,
-	0xe0: 1,
+	0xdf: 0,
+	0xe0: 0,
 	0xe1: 1,
 	0xe2: 0, // JPO ... I'll advance the pc manually in case Parity is even
 	0xe3: 1,
-	0xe4: 3,
+	0xe4: 0,
 	0xe5: 1,
 	0xe6: 2,
-	0xe7: 1,
-	0xe8: 1,
-	0xe9: 1,
+	0xe7: 0,
+	0xe8: 0,
+	0xe9: 0,
 	0xea: 0, // JPE ... I'll advance the pc manually in case Parity is odd
 	0xeb: 1,
-	0xec: 3,
+	0xec: 0,
 
 	0xee: 2,
-	0xef: 1,
-	0xf0: 1,
+	0xef: 0,
+	0xf0: 0,
 	0xf1: 1,
 	0xf2: 0, // JP ... I'll advance the pc manually in case the result is negative
 	0xf3: 1,
-	0xf4: 3,
+	0xf4: 0,
 	0xf5: 1,
 	0xf6: 2,
-	0xf7: 1,
-	0xf8: 1,
+	0xf7: 0,
+	0xf8: 0,
 	0xf9: 1,
 	0xfa: 0, // JM ... I'll advance the pc manually in case the result is positive
 	0xfb: 1,
-	0xfc: 3,
+	0xfc: 0,
 
 	0xfe: 2,
-	0xff: 1,
+	0xff: 0,
 }
 
 func (s *State) ExecInstruction() {
@@ -457,42 +457,107 @@ func (s *State) ExecInstruction() {
 	case 0x9f: // SBB A
 		s.subCy(s.regA)
 
+	case 0xc0: // RNZ
+		s.retOnFlag(FlagZ, false)
+
 	case 0xc2: // JNZ addr
 		s.jmpOnFlag(FlagZ, false)
 	case 0xc3: // JMP addr
-		s.pc = pairTo16(s.mem[s.pc+1], s.mem[s.pc+2])
+		s.jmp()
+	case 0xc4: // CNZ addr
+		s.callOnFlag(FlagZ, false)
 	case 0xc6: // ADI D8
 		s.add(s.mem[s.pc+1])
-
+	case 0xc7: // RST 0
+		s.rst(0x00)
+	case 0xc8: // RZ
+		s.retOnFlag(FlagZ, true)
+	case 0xc9: // RET
+		s.ret()
 	case 0xca: // JZ addr
 		s.jmpOnFlag(FlagZ, true)
 
+	case 0xcc: // CZ addr
+		s.callOnFlag(FlagZ, true)
+	case 0xcd: // CALL addr
+		s.call()
 	case 0xce: // ACI D8
 		s.addCy(s.mem[s.pc+1])
+	case 0xcf: // RST 1
+		s.rst(0x08)
+	case 0xd0: // RNC
+		s.retOnFlag(FlagCy, false)
 
 	case 0xd2: // JNC addr
 		s.jmpOnFlag(FlagCy, false)
 
+	case 0xd4: // CNC addr
+		s.callOnFlag(FlagCy, false)
+
 	case 0xd6: // SUI D8
 		s.sub(s.mem[s.pc+1])
+	case 0xd7: // RST 2
+		s.rst(0x10)
+	case 0xd8: // RC
+		s.retOnFlag(FlagCy, true)
 
 	case 0xda: // JC addr
 		s.jmpOnFlag(FlagCy, true)
 
+	case 0xdc: // CC addr
+		s.callOnFlag(FlagCy, true)
+
 	case 0xde: // SBI D8
 		s.subCy(s.mem[s.pc+1])
+	case 0xdf: // RST 3
+		s.rst(0x18)
+	case 0xe0: // RPO addr
+		s.retOnFlag(FlagP, false)
 
 	case 0xe2: // JPO addr
 		s.jmpOnFlag(FlagP, false)
 
+	case 0xe4: // CPO addr
+		s.callOnFlag(FlagP, false)
+
+	case 0xe7: // RST 4
+		s.rst(0x20)
+
+	case 0xe8: // RPE
+		s.retOnFlag(FlagP, true)
+
+	case 0xe9: // PCHL
+		s.pc = s.hl()
 	case 0xea: // JPE addr
 		s.jmpOnFlag(FlagP, true)
+
+	case 0xec: // CPE addr
+		s.callOnFlag(FlagP, true)
+
+	case 0xef: // RST 5
+		s.rst(0x28)
+	case 0xf0: // JP addr
+		s.retOnFlag(FlagS, false)
 
 	case 0xf2: // JP addr
 		s.jmpOnFlag(FlagS, false)
 
+	case 0xf4: // CP addr
+		s.callOnFlag(FlagS, false)
+
+	case 0xf7: // RST 6
+		s.rst(0x30)
+	case 0xf8: // RM
+		s.retOnFlag(FlagS, true)
+
 	case 0xfa: // JM addr ... Jump minus = Jump if negative = Jump when the Sign is set
 		s.jmpOnFlag(FlagS, true)
+
+	case 0xfc: // CM addr
+		s.callOnFlag(FlagS, true)
+
+	case 0xff: // RST 7
+		s.rst(0x38)
 	default:
 		panic(fmt.Sprintf("unimplemented instruction: 0x%02x", opcode))
 	}
@@ -512,8 +577,54 @@ func pairTo16(x, y byte) uint16 {
 
 func (s *State) jmpOnFlag(f Flag, set bool) {
 	if s.flags.IsSet(f) == set {
-		s.pc = pairTo16(s.mem[s.pc+1], s.mem[s.pc+2])
+		s.jmp()
 	} else {
 		s.pc += 3
 	}
+}
+
+func (s *State) jmp() {
+	s.pc = pairTo16(s.mem[s.pc+1], s.mem[s.pc+2])
+}
+
+func (s *State) callOnFlag(f Flag, set bool) {
+	if s.flags.IsSet(f) == set {
+		s.call()
+	} else {
+		s.pc += 3
+	}
+}
+
+func (s *State) call() {
+	var ret = s.pc + 3
+
+	// Push the return address into the stack. Stack goes "down"
+	s.mem[s.sp-1] = byte(ret >> 8)
+	s.mem[s.sp-2] = byte(ret)
+	s.sp += 2
+
+	s.jmp()
+}
+
+func (s *State) rst(addr uint16) {
+	var ret = s.pc + 3
+
+	s.mem[s.sp-1] = byte(ret >> 8)
+	s.mem[s.sp-2] = byte(ret)
+	s.sp += 2
+
+	s.pc = addr
+}
+
+func (s *State) retOnFlag(f Flag, set bool) {
+	if s.flags.IsSet(f) == set {
+		s.ret()
+	} else {
+		s.pc += 1
+	}
+}
+
+func (s *State) ret() {
+	s.pc = pairTo16(s.mem[s.sp+1], s.mem[s.sp])
+	s.sp += 2
 }
