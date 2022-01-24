@@ -456,6 +456,54 @@ func (s *State) ExecInstruction() {
 		s.subCy(s.mem[s.hl()])
 	case 0x9f: // SBB A
 		s.subCy(s.regA)
+	case 0xa0: // ANA B
+		s.and(s.regB)
+	case 0xa1: // ANA C
+		s.and(s.regC)
+	case 0xa2: // ANA D
+		s.and(s.regD)
+	case 0xa3: // ANA E
+		s.and(s.regE)
+	case 0xa4: // ANA H
+		s.and(s.regH)
+	case 0xa5: // ANA L
+		s.and(s.regL)
+	case 0xa6: // ANA M
+		s.and(s.mem[s.hl()])
+	case 0xa7: // ANA A
+		s.and(s.regA)
+	case 0xa8: // XRA B
+		s.xor(s.regB)
+	case 0xa9: // XRA C
+		s.xor(s.regC)
+	case 0xaa: // XRA D
+		s.xor(s.regD)
+	case 0xab: // XRA E
+		s.xor(s.regE)
+	case 0xac: // XRA H
+		s.xor(s.regH)
+	case 0xad: // XRA L
+		s.xor(s.regL)
+	case 0xae: // XRA M
+		s.xor(s.mem[s.hl()])
+	case 0xaf: // XRA A
+		s.xor(s.regA)
+	case 0xb0: // ORA B
+		s.or(s.regB)
+	case 0xb1: // ORA C
+		s.or(s.regC)
+	case 0xb2: // ORA D
+		s.or(s.regD)
+	case 0xb3: // ORA E
+		s.or(s.regE)
+	case 0xb4: // ORA H
+		s.or(s.regH)
+	case 0xb5: // ORA L
+		s.or(s.regL)
+	case 0xb6: // ORA M
+		s.or(s.mem[s.hl()])
+	case 0xb7: // ORA A
+		s.or(s.regA)
 
 	case 0xc0: // RNZ
 		s.retOnFlag(FlagZ, false)
@@ -575,56 +623,20 @@ func pairTo16(x, y byte) uint16 {
 	return (uint16(x) << 8) | uint16(y)
 }
 
-func (s *State) jmpOnFlag(f Flag, set bool) {
-	if s.flags.IsSet(f) == set {
-		s.jmp()
-	} else {
-		s.pc += 3
-	}
+func (s *State) and(x byte) {
+	s.regA &= x
+	s.setFlagsNoCy(s.regA)
+	s.flags.Unset(FlagCy) // AND unsets carry
 }
 
-func (s *State) jmp() {
-	s.pc = pairTo16(s.mem[s.pc+1], s.mem[s.pc+2])
+func (s *State) xor(x byte) {
+	s.regA ^= x
+	s.setFlagsNoCy(s.regA)
+	s.flags.Unset(FlagCy)
 }
 
-func (s *State) callOnFlag(f Flag, set bool) {
-	if s.flags.IsSet(f) == set {
-		s.call()
-	} else {
-		s.pc += 3
-	}
-}
-
-func (s *State) call() {
-	var ret = s.pc + 3
-
-	// Push the return address into the stack. Stack goes "down"
-	s.mem[s.sp-1] = byte(ret >> 8)
-	s.mem[s.sp-2] = byte(ret)
-	s.sp += 2
-
-	s.jmp()
-}
-
-func (s *State) rst(addr uint16) {
-	var ret = s.pc + 3
-
-	s.mem[s.sp-1] = byte(ret >> 8)
-	s.mem[s.sp-2] = byte(ret)
-	s.sp += 2
-
-	s.pc = addr
-}
-
-func (s *State) retOnFlag(f Flag, set bool) {
-	if s.flags.IsSet(f) == set {
-		s.ret()
-	} else {
-		s.pc += 1
-	}
-}
-
-func (s *State) ret() {
-	s.pc = pairTo16(s.mem[s.sp+1], s.mem[s.sp])
-	s.sp += 2
+func (s *State) or(x byte) {
+	s.regA |= x
+	s.setFlagsNoCy(s.regA)
+	s.flags.Unset(FlagCy)
 }
