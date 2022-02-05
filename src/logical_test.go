@@ -35,3 +35,17 @@ func TestOr(t *testing.T) {
 	}
 	doTest(t, table)
 }
+
+func TestCmp(t *testing.T) {
+	var table = []Pair{
+		Pair{ // CMP B
+			State{pc: 0, regA: 0xA, regB: 0x5, mem: [65536]byte{0xb8}},
+			State{pc: 1, regA: 0xA, regB: 0x5, mem: [65536]byte{0xb8}, flags: 0b00000100},
+		},
+		Pair{ // CMP C ... A = -0xb, C = 0x5
+			State{pc: 0, regA: 0b11100101, regC: 0x5, mem: [65536]byte{0xb9}},
+			State{pc: 1, regA: 0b11100101, regC: 0x5, mem: [65536]byte{0xb9}, flags: 0b00000010},
+		},
+	}
+	doTest(t, table)
+}

@@ -504,6 +504,22 @@ func (s *State) ExecInstruction() {
 		s.or(s.mem[s.hl()])
 	case 0xb7: // ORA A
 		s.or(s.regA)
+	case 0xb8: // CMP B
+		s.cmp(s.regB)
+	case 0xb9: // CMP C
+		s.cmp(s.regC)
+	case 0xba: // CMP D
+		s.cmp(s.regD)
+	case 0xbb: // CMP E
+		s.cmp(s.regE)
+	case 0xbc: // CMP H
+		s.cmp(s.regH)
+	case 0xbd: // CMP L
+		s.cmp(s.regL)
+	case 0xbe: // CMP M
+		s.cmp(s.mem[s.hl()])
+	case 0xbf: // CMP A
+		s.cmp(s.regA)
 
 	case 0xc0: // RNZ
 		s.retOnFlag(FlagZ, false)
@@ -639,4 +655,9 @@ func (s *State) or(x byte) {
 	s.regA |= x
 	s.setFlagsNoCy(s.regA)
 	s.flags.Unset(FlagCy)
+}
+
+func (s *State) cmp(x byte) {
+	var result uint16 = uint16(s.regA) + (^uint16(x) + 1)
+	s.setFlags(result)
 }
