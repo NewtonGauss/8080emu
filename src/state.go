@@ -324,6 +324,9 @@ func (s *State) ExecInstruction() {
 	case 0x05: // DCR B
 		s.dec(&s.regB)
 
+	case 0x07: // RLC
+		s.rlc()
+
 	case 0x09: // DAD B
 		s.dad(pairTo16(s.regB, s.regC))
 
@@ -334,12 +337,18 @@ func (s *State) ExecInstruction() {
 	case 0x0D: // DCR C
 		s.dec(&s.regC)
 
+	case 0x0F: // RRC
+		s.rrc()
+
 	case 0x13: // INX D
 		s.inx(&s.regD, &s.regE)
 	case 0x14: // INR D
 		s.inc(&s.regD)
 	case 0x15: // DCR D
 		s.dec(&s.regD)
+
+	case 0x17: // RAL
+		s.ral()
 
 	case 0x19: // DAD D
 		s.dad(pairTo16(s.regD, s.regE))
@@ -350,6 +359,9 @@ func (s *State) ExecInstruction() {
 		s.inc(&s.regE)
 	case 0x1d: // DCR E
 		s.dec(&s.regE)
+
+	case 0x1f: // RAR
+		s.rar()
 
 	case 0x23: // INX H
 		s.inx(&s.regH, &s.regL)
@@ -584,6 +596,8 @@ func (s *State) ExecInstruction() {
 	case 0xe4: // CPO addr
 		s.callOnFlag(FlagP, false)
 
+	case 0xe6: // ANI D8
+		s.and(s.mem[s.pc+1])
 	case 0xe7: // RST 4
 		s.rst(0x20)
 
@@ -598,6 +612,8 @@ func (s *State) ExecInstruction() {
 	case 0xec: // CPE addr
 		s.callOnFlag(FlagP, true)
 
+	case 0xee: // XRI D8
+		s.xor(s.mem[s.pc+1])
 	case 0xef: // RST 5
 		s.rst(0x28)
 	case 0xf0: // JP addr
@@ -609,6 +625,8 @@ func (s *State) ExecInstruction() {
 	case 0xf4: // CP addr
 		s.callOnFlag(FlagS, false)
 
+	case 0xf6: // ORI D8
+		s.or(s.mem[s.pc+1])
 	case 0xf7: // RST 6
 		s.rst(0x30)
 	case 0xf8: // RM
@@ -620,6 +638,8 @@ func (s *State) ExecInstruction() {
 	case 0xfc: // CM addr
 		s.callOnFlag(FlagS, true)
 
+	case 0xfe: // CPI D8
+		s.cmp(s.mem[s.pc+1])
 	case 0xff: // RST 7
 		s.rst(0x38)
 	default:
@@ -637,27 +657,4 @@ func (s *State) hl() uint16 {
 // pairTo16 returns a uint16 formed by (xy)
 func pairTo16(x, y byte) uint16 {
 	return (uint16(x) << 8) | uint16(y)
-}
-
-func (s *State) and(x byte) {
-	s.regA &= x
-	s.setFlagsNoCy(s.regA)
-	s.flags.Unset(FlagCy) // AND unsets carry
-}
-
-func (s *State) xor(x byte) {
-	s.regA ^= x
-	s.setFlagsNoCy(s.regA)
-	s.flags.Unset(FlagCy)
-}
-
-func (s *State) or(x byte) {
-	s.regA |= x
-	s.setFlagsNoCy(s.regA)
-	s.flags.Unset(FlagCy)
-}
-
-func (s *State) cmp(x byte) {
-	var result uint16 = uint16(s.regA) + (^uint16(x) + 1)
-	s.setFlags(result)
 }
