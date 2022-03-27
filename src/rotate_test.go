@@ -21,12 +21,20 @@ func TestRotate(t *testing.T) {
 			State{pc: 1, regA: 0b10000000, mem: [65536]byte{0x0f}, flags: 0b00001000},
 		},
 		Pair{ // RAL
-			State{pc: 0, regA: 0b10000000, mem: [65536]byte{0x1f}, flags: 0b00001000},
-			State{pc: 1, regA: 0b00000001, mem: [65536]byte{0x1f}, flags: 0b00001000},
+			State{pc: 0, regA: 0b10000000, mem: [65536]byte{0x17}, flags: 0b00001000},
+			State{pc: 1, regA: 0b00000001, mem: [65536]byte{0x17}, flags: 0b00001000},
 		},
 		Pair{ // RAL
-			State{pc: 0, regA: 0b00000001, mem: [65536]byte{0x1f}},
-			State{pc: 1, regA: 0b00000010, mem: [65536]byte{0x1f}},
+			State{pc: 0, regA: 0b00000001, mem: [65536]byte{0x17}},
+			State{pc: 1, regA: 0b00000010, mem: [65536]byte{0x17}},
+		},
+		Pair{ // RAL
+			State{pc: 0, regA: 0b10101010, mem: [65536]byte{0x17}},
+			State{pc: 1, regA: 0b01010100, mem: [65536]byte{0x17}, flags: 0b00001000},
+		},
+		Pair{ // RAL
+			State{pc: 0, regA: 0b00101010, mem: [65536]byte{0x17}, flags: 0b00001000},
+			State{pc: 1, regA: 0b01010101, mem: [65536]byte{0x17}, flags: 0b00000000},
 		},
 		Pair{ // RAR
 			State{pc: 0, regA: 0b10000000, mem: [65536]byte{0x1f}, flags: 0b00001000},
@@ -35,6 +43,10 @@ func TestRotate(t *testing.T) {
 		Pair{ // RAR
 			State{pc: 0, regA: 0b00000001, mem: [65536]byte{0x1f}},
 			State{pc: 1, regA: 0b00000000, mem: [65536]byte{0x1f}, flags: 0b00001000},
+		},
+		Pair{ // RAR
+			State{pc: 0, regA: 0b10101010, mem: [65536]byte{0x1f}},
+			State{pc: 1, regA: 0b01010101, mem: [65536]byte{0x1f}},
 		},
 	}
 	doTest(t, table)
